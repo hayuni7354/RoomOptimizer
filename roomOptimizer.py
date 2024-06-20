@@ -95,7 +95,7 @@ def optimizeRoomset1(roomset, stair):
         for x in range(len(opRoomset[0])):
             if(isinstance(opRoomset[y][x], StartRoom)): rList.append({'room': opRoomset[y][x], 'pos': [x,y]})
             elif(opRoomset[y][x] > 0): eList.append({'index': opRoomset[y][x], 'pos': [x,y]})
-    for count in range(100000):
+    for count in range(1000):
         tempRoomset = copy.deepcopy(opRoomset)
         distance = [float('inf'), float('inf'), float('inf'), float('inf'), float('inf')]
         distance[0] = CalcMeanDistance(opRoomset, stair)
@@ -171,11 +171,167 @@ def optimizeRoomset1(roomset, stair):
 
     return opRoomset
 
+def optimizeRoomset2(roomset, stair, crit):
+    opRoomset = copy.deepcopy(roomset)
+    rList = []
+    eList = []
+    for y in range(len(opRoomset)):
+        for x in range(len(opRoomset[0])):
+            if(isinstance(opRoomset[y][x], StartRoom)): rList.append({'room': opRoomset[y][x], 'pos': [x,y]})
+            elif(opRoomset[y][x] > 0): eList.append({'index': opRoomset[y][x], 'pos': [x,y]})
+    for count in range(1000):
+        tempRoomset = copy.deepcopy(opRoomset)
+        distance = [float('inf'), float('inf'), float('inf'), float('inf'), float('inf')]
+        distance[0] = CalcMeanDistance(opRoomset, stair)
 
+        #오버/언더플로우 -> 롤 시스템 -> 오류
+        if(rList[count % len(rList)]['pos'][0] - 1 > -1 and (isinstance(opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - 1], StartRoom) or opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - 1] == 0)):
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - 1]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - 1] = temp
+            distance[1] = CalcMeanDistance(opRoomset, stair)
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - 1]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - 1] = temp
+        if(rList[count % len(rList)]['pos'][0] + 1 < len(opRoomset[0]) and (isinstance(opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + 1], StartRoom) or opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + 1] == 0)):
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + 1]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + 1] = temp
+            distance[2] = CalcMeanDistance(opRoomset, stair)
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + 1]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + 1] = temp
+        if(rList[count % len(rList)]['pos'][1] - 1 > -1 and (isinstance(opRoomset[rList[count % len(rList)]['pos'][1] - 1][rList[count % len(rList)]['pos'][0]], StartRoom) or opRoomset[rList[count % len(rList)]['pos'][1] - 1][rList[count % len(rList)]['pos'][0]] == 0)):
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] - 1][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1] - 1][rList[count % len(rList)]['pos'][0]] = temp
+            distance[3] = CalcMeanDistance(opRoomset, stair)
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] - 1][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1] - 1][rList[count % len(rList)]['pos'][0]] = temp
+        if(rList[count % len(rList)]['pos'][1] + 1 < len(opRoomset) and (isinstance(opRoomset[rList[count % len(rList)]['pos'][1] + 1][rList[count % len(rList)]['pos'][0]], 
+        StartRoom) or opRoomset[rList[count % len(rList)]['pos'][1] + 1][rList[count % len(rList)]['pos'][0]] == 0)):
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] + 1][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1] + 1][rList[count % len(rList)]['pos'][0]] = temp
+            
+            distance[4] = CalcMeanDistance(opRoomset, stair)
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] + 1][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1] + 1][rList[count % len(rList)]['pos'][0]] = temp
 
+        shortestDistanceIndex = 0
+        for i in range(5):
+            if(distance[i] == distance[shortestDistanceIndex]): shortestDistanceIndex = rand.choice([i,shortestDistanceIndex])
+            elif(distance[i] < distance[shortestDistanceIndex]): shortestDistanceIndex = i
 
+        if(shortestDistanceIndex == 1):
+            nowDistance = CalcMeanDistance(opRoomset, stair)
+            minDistance = CalcMeanDistance(opRoomset, stair)
+            jump = rList[count % len(rList)]['pos'][0]
+            search = rList[count % len(rList)]['pos'][0]
+            loopout = False
+            for _ in range(len(opRoomset[0])):
+                if(loopout or search == 0): break
+                if((not isinstance(opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - search],StartRoom)) and opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - search] != 0): search -= 1; continue
+                temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - search]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - search] = temp
+                if(CalcMeanDistance(opRoomset, stair) <= minDistance):
+                    minDistance = CalcMeanDistance(opRoomset, stair)
+                    jump = search
+                    if(nowDistance - CalcMeanDistance(opRoomset, stair) <= crit): loopout = True
+                temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - search]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - search] = temp
+                search = search // 2
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - jump]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - jump] = temp
+            rList[count % len(rList)]['pos'][0] -= jump
+            a = getIndexfromrList(rList[count % len(rList)]['pos'], rList)
+            if(isinstance(a, StartRoom)): a['pos'][0] += jump
+        elif(shortestDistanceIndex == 2):
+            nowDistance = CalcMeanDistance(opRoomset, stair)
+            minDistance = CalcMeanDistance(opRoomset, stair)
+            jump = len(opRoomset[0]) - 1 - rList[count % len(rList)]['pos'][0]
+            search = len(opRoomset[0]) - 1 - rList[count % len(rList)]['pos'][0]
+            loopout = False
+            for _ in range(len(opRoomset[0])):
+                if(loopout or search == 0): break
+                if((not isinstance(opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + search],StartRoom)) and opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + search] != 0): search -= 1; continue
+                temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + search]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + search] = temp
+                if(CalcMeanDistance(opRoomset, stair) <= minDistance):
+                    minDistance = CalcMeanDistance(opRoomset, stair)
+                    jump = search
+                    if(nowDistance - CalcMeanDistance(opRoomset, stair) <= crit): loopout = True
+                temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + search]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + search] = temp
+                search = search // 2
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + jump]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + jump] = temp
+            rList[count % len(rList)]['pos'][0] += jump
+            a = getIndexfromrList(rList[count % len(rList)]['pos'], rList)
+            if(isinstance(a, StartRoom)): a['pos'][0] -= jump
+        elif(shortestDistanceIndex == 3):
+            nowDistance = CalcMeanDistance(opRoomset, stair)
+            minDistance = CalcMeanDistance(opRoomset, stair)
+            jump = rList[count % len(rList)]['pos'][1]
+            search = rList[count % len(rList)]['pos'][1]
+            loopout = False
+            for _ in range(len(opRoomset)):
+                if(loopout or search == 0): break
+                if((not isinstance(opRoomset[rList[count % len(rList)]['pos'][1] - search][rList[count % len(rList)]['pos'][0]],StartRoom)) and opRoomset[rList[count % len(rList)]['pos'][1] - search][rList[count % len(rList)]['pos'][0]] != 0): search -= 1; continue
+                temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] - search][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1] - search][rList[count % len(rList)]['pos'][0]] = temp
+                if(CalcMeanDistance(opRoomset, stair) <= minDistance):
+                    minDistance = CalcMeanDistance(opRoomset, stair)
+                    jump = search
+                    if(nowDistance - CalcMeanDistance(opRoomset, stair) <= crit): loopout = True
+                temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] - search][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1] - search][rList[count % len(rList)]['pos'][0]] = temp
+                search = search // 2
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] - jump][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1] - jump][rList[count % len(rList)]['pos'][0]] = temp
+            rList[count % len(rList)]['pos'][1] -= jump
+            a = getIndexfromrList(rList[count % len(rList)]['pos'], rList)
+            if(isinstance(a, StartRoom)): a['pos'][1] += jump
+        elif(shortestDistanceIndex == 4):
+            nowDistance = CalcMeanDistance(opRoomset, stair)
+            minDistance = CalcMeanDistance(opRoomset, stair)
+            jump = len(opRoomset) - 1 - rList[count % len(rList)]['pos'][1]
+            search = len(opRoomset) - 1 - rList[count % len(rList)]['pos'][1]
+            loopout = False
+            for _ in range(len(opRoomset)):
+                if(loopout or search == 0): break
+                if((not isinstance(opRoomset[rList[count % len(rList)]['pos'][1] + search][rList[count % len(rList)]['pos'][0]],StartRoom)) and opRoomset[rList[count % len(rList)]['pos'][1] + search][rList[count % len(rList)]['pos'][0]] != 0): search -= 1; continue
+                temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] + search][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1] + search][rList[count % len(rList)]['pos'][0]] = temp
+                if(CalcMeanDistance(opRoomset, stair) <= minDistance):
+                    minDistance = CalcMeanDistance(opRoomset, stair)
+                    jump = search
+                    if(nowDistance - CalcMeanDistance(opRoomset, stair) <= crit): loopout = True
+                temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] + search][rList[count % len(rList)]['pos'][0]]
+                opRoomset[rList[count % len(rList)]['pos'][1] + search][rList[count % len(rList)]['pos'][0]] = temp
+                search = search // 2
+            temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
+            opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] + jump][rList[count % len(rList)]['pos'][0]]
 
+            opRoomset[rList[count % len(rList)]['pos'][1] + jump][rList[count % len(rList)]['pos'][0]] = temp
+            rList[count % len(rList)]['pos'][1] += jump
+            a = getIndexfromrList(rList[count % len(rList)]['pos'], rList)
+            if(isinstance(a, StartRoom)): a['pos'][1] -= jump
 
+    return opRoomset
 
 
 rList1 = []
@@ -189,6 +345,7 @@ for _ in range(5):
 # StartRoom 인스턴스는 출발 방
 # 양수는 도착 방
 # -1은 출발 방이 들어갈 수 없는 빈칸
+
 roomset = [
     rList1,
     rList2,
@@ -196,10 +353,36 @@ roomset = [
     [0,2,0,1,0,],
     [0,0,0,0,3,],
 ]
+"""
+roomset = [
+    [0,0,0,0,rList1[1],],
+    [0,2,0,1,rList1[0],],
+    [0,0,0,0,3,],
+]"""
+
 stair = [0,2,4]
+
+
+
+"""
 print('----------------')
 print(CalcMeanDistance(roomset,stair))
 opRoomset = optimizeRoomset1(roomset,stair)
+roomVisual = []
+for y in range(len(opRoomset)):
+    arr = []
+    for x in range(len(opRoomset[0])):
+        a = opRoomset[y][x]
+        if(isinstance(a, int)): arr.append(a)
+        elif(isinstance(a, StartRoom)): arr.append('p' + str(a.endList[0]['index']))
+    roomVisual.append(arr)
+print(roomVisual)
+print(CalcMeanDistance(opRoomset, stair))
+"""
+
+print('----------------')
+print(CalcMeanDistance(roomset,stair))
+opRoomset = optimizeRoomset2(roomset,stair, 1)
 roomVisual = []
 for y in range(len(opRoomset)):
     arr = []
