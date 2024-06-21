@@ -240,7 +240,7 @@ def optimizeRoomset2(roomset, stair, crit):
                 if(CalcMeanDistance(opRoomset, stair) <= minDistance):
                     minDistance = CalcMeanDistance(opRoomset, stair)
                     jump = search
-                    if(nowDistance - CalcMeanDistance(opRoomset, stair) <= crit): loopout = True
+                    if(nowDistance - CalcMeanDistance(opRoomset, stair) >= crit): loopout = True
                 temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
                 opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - search]
                 opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] - search] = temp
@@ -266,7 +266,7 @@ def optimizeRoomset2(roomset, stair, crit):
                 if(CalcMeanDistance(opRoomset, stair) <= minDistance):
                     minDistance = CalcMeanDistance(opRoomset, stair)
                     jump = search
-                    if(nowDistance - CalcMeanDistance(opRoomset, stair) <= crit): loopout = True
+                    if(nowDistance - CalcMeanDistance(opRoomset, stair) >= crit): loopout = True
                 temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
                 opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + search]
                 opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0] + search] = temp
@@ -292,7 +292,7 @@ def optimizeRoomset2(roomset, stair, crit):
                 if(CalcMeanDistance(opRoomset, stair) <= minDistance):
                     minDistance = CalcMeanDistance(opRoomset, stair)
                     jump = search
-                    if(nowDistance - CalcMeanDistance(opRoomset, stair) <= crit): loopout = True
+                    if(nowDistance - CalcMeanDistance(opRoomset, stair) >= crit): loopout = True
                 temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
                 opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] - search][rList[count % len(rList)]['pos'][0]]
                 opRoomset[rList[count % len(rList)]['pos'][1] - search][rList[count % len(rList)]['pos'][0]] = temp
@@ -318,7 +318,7 @@ def optimizeRoomset2(roomset, stair, crit):
                 if(CalcMeanDistance(opRoomset, stair) <= minDistance):
                     minDistance = CalcMeanDistance(opRoomset, stair)
                     jump = search
-                    if(nowDistance - CalcMeanDistance(opRoomset, stair) <= crit): loopout = True
+                    if(nowDistance - CalcMeanDistance(opRoomset, stair) >= crit): loopout = True
                 temp = opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]]
                 opRoomset[rList[count % len(rList)]['pos'][1]][rList[count % len(rList)]['pos'][0]] = opRoomset[rList[count % len(rList)]['pos'][1] + search][rList[count % len(rList)]['pos'][0]]
                 opRoomset[rList[count % len(rList)]['pos'][1] + search][rList[count % len(rList)]['pos'][0]] = temp
@@ -382,7 +382,7 @@ print(CalcMeanDistance(opRoomset, stair))
 
 print('----------------')
 print(CalcMeanDistance(roomset,stair))
-opRoomset = optimizeRoomset2(roomset,stair, 1)
+opRoomset = optimizeRoomset2(roomset,stair, 0.5)
 roomVisual = []
 for y in range(len(opRoomset)):
     arr = []
