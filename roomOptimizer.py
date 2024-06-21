@@ -87,7 +87,7 @@ def findStairFromEnd(x, stair):
             searchingIndex[0] = check + 1
             check = (searchingIndex[1] + check + 1) // 2
 
-def optimizeRoomset1(roomset, stair):
+def optimizeRoomset1(roomset, stair): #다만드니까 4시다 ㅁㄴㅇㄹ
     opRoomset = copy.deepcopy(roomset)
     rList = []
     eList = []
@@ -171,7 +171,7 @@ def optimizeRoomset1(roomset, stair):
 
     return opRoomset
 
-def optimizeRoomset2(roomset, stair, crit):
+def optimizeRoomset2(roomset, stair, crit): ##다만드니까 6시다 ㅁㄴㅇㄹ
     opRoomset = copy.deepcopy(roomset)
     rList = []
     eList = []
@@ -382,7 +382,7 @@ print(CalcMeanDistance(opRoomset, stair))
 
 print('----------------')
 print(CalcMeanDistance(roomset,stair))
-opRoomset = optimizeRoomset2(roomset,stair, 0.5)
+opRoomset = optimizeRoomset2(roomset,stair, 0.7)
 roomVisual = []
 for y in range(len(opRoomset)):
     arr = []
